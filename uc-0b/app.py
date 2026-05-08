@@ -106,12 +106,19 @@ def main():
     no_key = not os.environ.get("ANTHROPIC_API_KEY")
     if args.dry_run or no_key:
         if no_key and not args.dry_run:
-            print("No ANTHROPIC_API_KEY set — running in dry-run mode.", file=sys.stderr)
-        print("\n--- DRY RUN: sections parsed ---")
+            print("No ANTHROPIC_API_KEY set.", file=sys.stderr)
+        print("\n sections parsed ---")
         for s in policy["sections"]:
             print(f"  Clause {s['clause_number']}: {s['clause_text'][:80]}...")
-        print("\n--- DRY RUN: system prompt that would be sent ---")
+        print("\n system prompt that would be sent ---")
         print(SYSTEM_PROMPT)
+        dry_run_output = "\n Sections parsed:\n"
+        for s in policy["sections"]:
+            dry_run_output += f"  Clause {s['clause_number']}: {s['clause_text'][:80]}...\n"
+        dry_run_output += "\nSystem prompt that would be sent:\n" + SYSTEM_PROMPT
+        with open(args.output, "w", encoding="utf-8") as f:
+            f.write(dry_run_output)
+        print(f"Dry-run output written to {args.output}")
         return
 
     import anthropic
